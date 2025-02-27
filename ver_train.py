@@ -92,17 +92,17 @@ if __name__ == '__main__':
     parser.add_argument('--save_path', type=str, required=False, default='./stage1_MSC',
                         help="Directory to save results")
 
-    # Uncomment for Training Unet
+    # Training Unet
     # parser.add_argument('--ckpt', type=str, required=False, default='ckpt_for_stage1.ckpt')
     # parser.add_argument('--config', type=str, required=False, default='./models/mldm_v15_unet_only.yaml')
     # parser.add_argument('--save_path', type=str, required=False, default='./stage1_Unet')
 
-    # Uncomment for Finetuning MSC with diffusion loss
+    # Finetuning MSC with diffusion loss
     # parser.add_argument('--ckpt', type=str, required=False, default='ckpt_for_stage2.ckpt')
     # parser.add_argument('--config', type=str, required=False, default='./models/mldm_v15_stage2_1.yaml')
     # parser.add_argument('--save_path', type=str, required=False, default='./stage2_1')
 
-    # Uncomment for Full Finetuning
+    # Full Finetuning
     # parser.add_argument('--ckpt', type=str, required=False, default='stage2_1/last.ckpt')
     # parser.add_argument('--config', type=str, required=False, default='./models/mldm_v15_stage2_2.yaml')
     # parser.add_argument('--save_path', type=str, required=False, default='./stage2_2')
