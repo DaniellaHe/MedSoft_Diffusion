@@ -1,0 +1,13 @@
+{
+  "img_size": [
+    256,
+    256
+  ],
+  "Batch_Size": 256,
+  "EPOCHS": 100,
+  "GPU": "0",
+  "dataset": "RSNA",
+  "train": "Train",
+  "test_epoch": 5,
+  "save_epoch": 20
+}
