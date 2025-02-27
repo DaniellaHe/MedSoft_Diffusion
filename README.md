@@ -55,6 +55,8 @@ JSON format:
 
 **Important:** Even though healthy samples do not contain a disease description, the `prompt.txt` file **must still exist** in each sample folder. For healthy samples, the `prompt.txt` file should contain only `"healthy"`. This ensures consistency in data formatting and compatibility with the processing script.
 
+## **Step1: Pretraining Medical Semantic Controller (MSC)**
+
 **1. Convert Stable Diffusion Weights**
 
 Before training, you need to convert the weights of **[Stable Diffusion](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-inpainting)** (sd-v1-5-inpainting.ckpt) into a customized format:
@@ -146,3 +148,4 @@ Run Classification:
 ```sh
 python classifier.py args1.json
 ```
+
