@@ -15,7 +15,7 @@ def main(args):
     logger_freq = 300
     eta = 0.0
     scale = 7.5
-    ddim_steps = 30
+    ddim_steps = 50
     seed = 0
     seed_everything(seed)
 
@@ -33,28 +33,6 @@ def main(args):
     model.batch_size = batch_size
     model.root_dir = root_dir
 
-    # dtype = torch.float16
-    # if dtype == torch.float16:
-    #     model = model.half()
-    #     model.fusion_model.dtype = model.dtype
-    #     model.model.diffusion_model.dtype = model.dtype
-
-    # # Misc
-    # test_dataloader = DataLoader(test_dataset, num_workers=1, batch_size=batch_size, shuffle=False, drop_last=True)
-    #
-    # trainer = pl.Trainer(gpus=1)
-    #
-    # trainer.test(model, test_dataloader)
-
-    # # Misc
-    # gen_dataset = VerGenetrateDataset(json_path="openimages_format.json", mode='gen')
-    # gen_dataloader = DataLoader(gen_dataset, num_workers=1, batch_size=batch_size, shuffle=False, drop_last=True)
-    #
-    # trainer = pl.Trainer(gpus=1)
-    #
-    # trainer.test(model, gen_dataloader)
-
-    # Misc
     gen_dataset = VerOpenImagesDataset(json_path="openimages_format_healthy_train.json")
     gen_dataloader = DataLoader(gen_dataset, num_workers=1, batch_size=batch_size, shuffle=False, drop_last=True)
 
@@ -64,7 +42,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Model Testing Script")
-    parser.add_argument('--ckpt', type=str, required=False, default='./stage2_1/last.ckpt')
+    parser.add_argument('--ckpt', type=str, required=False, default='./stage2_2/last.ckpt')
     parser.add_argument('--output_dir', type=str, required=False, default='./generated_images/pepper_salt_results_soft')
     parser.add_argument('--config', type=str, required=False, default='./models/mldm_v15.yaml')
     
