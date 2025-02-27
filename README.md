@@ -55,17 +55,6 @@ JSON format:
 
 **Important:** Even though healthy samples do not contain a disease description, the `prompt.txt` file **must still exist** in each sample folder. For healthy samples, the `prompt.txt` file should contain only `"healthy"`. This ensures consistency in data formatting and compatibility with the processing script.
 
-## Training Pipeline
-
-The training process is divided into **two stages**:
-
-- **Stage 1:** The **Medical Semantic Controller (MSC)** and the **enhanced cross-attention layers** in the U-Net are optimized using **MSC loss** and **diffusion loss** with **Soft Mask Inpainting Strategy (SMIS)**, respectively.
-- **Stage 2:** The full **MedSoft-Diffusion** model is **fine-tuned** with diffusion loss. 
-  - Initially, **only MSC is fine-tuned** while freezing the other modules.
-  - In the later steps, **the enhanced cross-attention layers in the U-Net are also unfrozen and fine-tuned**.
-
-## **Step1: Pretraining Medical Semantic Controller (MSC)**
-
 **1. Convert Stable Diffusion Weights**
 
 Before training, you need to convert the weights of **[Stable Diffusion](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-inpainting)** (sd-v1-5-inpainting.ckpt) into a customized format:
