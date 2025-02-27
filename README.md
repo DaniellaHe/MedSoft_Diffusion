@@ -21,7 +21,7 @@ Ensure your dataset is organized as follows:
 dataset/
 ├── sample_001/
 │   ├── image.png   # Original medical image
-│   ├── mask.png    # Corresponding mask image
+│   ├── mask.png    # Corresponding soft mask image
 │   ├── prompt.txt  # Text description
 ├── sample_002/
 │   ├── image.png
@@ -30,7 +30,7 @@ dataset/
 ├── ...
 ```
 
-### Process dataset:
+Process dataset:
 
 ```sh
 python ver_openImagesDatasets.py \
@@ -38,7 +38,7 @@ python ver_openImagesDatasets.py \
   --output_file openimages_format.json
 ```
 
-### JSON format:
+JSON format:
 
 ```json
 [
@@ -59,16 +59,16 @@ python ver_openImagesDatasets.py \
 
 The training process is divided into **two stages**:
 
-- **Stage 1:** The **Medical Semantic Controller (MSC)** and the **enhanced cross-attention layers** in the U-Net are optimized using **MSC loss** and **diffusion loss**, respectively.
+- **Stage 1:** The **Medical Semantic Controller (MSC)** and the **enhanced cross-attention layers** in the U-Net are optimized using **MSC loss** and **diffusion loss** with **Soft Mask Inpainting Strategy (SMIS)**, respectively.
 - **Stage 2:** The full **MedSoft-Diffusion** model is **fine-tuned** with diffusion loss. 
   - Initially, **only MSC is fine-tuned** while freezing the other modules.
   - In the later steps, **the enhanced cross-attention layers in the U-Net are also unfrozen and fine-tuned**.
 
-### **Stage 1: Training MSC and U-Net Cross-Attention Layers**
+## **Step1: Pretraining Medical Semantic Controller (MSC)**
 
-#### **1. Convert Stable Diffusion Weights**
+**1. Convert Stable Diffusion Weights**
 
-Before training, you need to convert the weights of **[Stable Diffusion](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-inpainting)** into a customized format:
+Before training, you need to convert the weights of **[Stable Diffusion](https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-inpainting)** (sd-v1-5-inpainting.ckpt) into a customized format:
 
 ```sh
 python ./tool/model_convert.py \
@@ -77,9 +77,9 @@ python ./tool/model_convert.py \
   --config ./models/mldm_v15.yaml
 ```
 
-#### **2. Train Medical Semantic Controller (MSC)**
+**2. Train Medical Semantic Controller (MSC)**
 
-We use the medical multi-model **[BiomedCLIP](https://huggingface.co/microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224)** to train MSC.
+We use the medical multi-model **[BiomedCLIP](https://huggingface.co/microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224)** to train MSC. 
 
 ```sh
 python ver_train.py \
@@ -88,7 +88,17 @@ python ver_train.py \
   --save_path ./stage1_MSC
 ```
 
-#### **3. Train the Enhanced Cross-Attention Layers in the U-Net**
+## **Step 2: Training with Soft Mask Inpainting Strategy (SMIS)**
+
+The **Soft Mask Inpainting Strategy (SMIS)** is designed to improve lesion synthesis realism by:
+
+- Replacing hard lesion masks with **soft masks** (generated from anatomical segmentation masks or bounding boxes).
+- Applying **Gaussian blurring** to ensure smooth lesion-background integration.
+- Constraining the inpainting process to the **soft-masked lesion region**, preventing changes to the anatomical background.
+
+The following steps train the U-Net's **enhanced cross-attention layers**, which integrate soft mask conditioning and medical semantic features.
+
+**1. Training the U-Net's enhanced cross-attention layers**
 
 ```sh
 python ver_train.py \
@@ -97,9 +107,7 @@ python ver_train.py \
   --save_path ./stage1_Unet
 ```
 
-### **Stage 2: Fine-Tuning MedSoft-Diffusion**
-
-#### **1. Merge the Pre-trained Weights from Stage 1**
+**2. Merge the Pre-trained Weights from Step 1**
 
 ```sh
 python ./tool/tool_merge_for_stage2.py \
@@ -109,7 +117,7 @@ python ./tool/tool_merge_for_stage2.py \
   --config ./models/mldm_v15.yaml
 ```
 
-#### **2. Fine-tune MSC with Diffusion Loss**
+**3. Fine-tune MSC with Diffusion Loss**
 
 ```sh
 python ver_train.py \
@@ -118,7 +126,7 @@ python ver_train.py \
   --save_path ./stage2_1
 ```
 
-#### **3. Full Fine-Tuning**
+**4. Fine-tuning the full MedSoft-Diffusion model using soft mask inpainting**
 
 ```sh
 python ver_train.py \
@@ -127,7 +135,9 @@ python ver_train.py \
   --save_path ./stage2_2
 ```
 
-## Inference
+## Step 3: Inference
+
+During inference, the model uses **soft masks** to confine lesion synthesis to the intended region while preserving anatomical structures.
 
 Infer with dataset:
 
@@ -147,4 +157,3 @@ Run Classification:
 ```sh
 python classifier.py args1.json
 ```
-
