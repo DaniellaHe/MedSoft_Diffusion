@@ -69,9 +69,9 @@ def main(args):
 
     # Initialize the PyTorch Lightning trainer
     trainer = pl.Trainer(
-        gpus=1,  # Use one GPU
-        precision=32,  # Use 32-bit precision
-        max_epochs=20,  # Train for 2 epochs
+        gpus=4, 
+        precision=32,  
+        max_epochs=20,  
         val_check_interval=0.5,  # Validate twice per epoch
         callbacks=[checkpoint_callback]
     )
