@@ -139,7 +139,7 @@ def single_evaluation(model, testing_dataset, args, epoch, loss):
         predicted_prob = torch.tensor(predicted_prob)
         label = torch.tensor(label)
         predicted_label = (predicted_prob > 0.5).float()
-        auc = roc_auc_score(label.cpu().numpy(), predicted_label.cpu().numpy())
+        auc = roc_auc_score(label.cpu().numpy(), predicted_prob.cpu().numpy())
         accuracy = accuracy_score(label.cpu().numpy(), predicted_label.cpu().numpy())
         precision = precision_score(label.cpu().numpy(), predicted_label.cpu().numpy(), zero_division=1)
         recall = recall_score(label.cpu().numpy(), predicted_label.cpu().numpy())
